@@ -207,7 +207,7 @@ class Trainer():
             if self.fp16:
                 with torch.cuda.amp.autocast():
                     outputs = self.model(inputs)
-                    loss = self.criterion(outputs, targets.view(-1, 1))
+                    loss = self.criterion(outputs.flatten(), targets)
                     metrics = self.monitor_metrics(outputs, targets)
                 self.scaler.scale(loss).backward()
                 self.scaler.step(self.optimizer)
@@ -234,7 +234,7 @@ class Trainer():
             targets = targets.to(self.device, non_blocking=True)
             with torch.no_grad():
                 outputs = self.model(inputs)
-                loss = self.criterion(outputs, targets.view(-1, 1))
+                loss = self.criterion(outputs.flatten(), targets)
                 metrics = self.monitor_metrics(outputs, targets)
             return outputs, loss, metrics
         else:
